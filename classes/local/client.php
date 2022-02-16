@@ -56,6 +56,7 @@ class client {
             ],
             'decode_content' => 'gzip',
             'connect_timeout' => 30,
+            'timeout' => 60,
             'headers' => [
                 'User-Agent' => static::get_user_agent(),
                 'X-Plugin-Version' => api::get_enrolment_plugin()->get_plugin_release()

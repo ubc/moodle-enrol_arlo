@@ -137,11 +137,12 @@ class contacts_job extends job {
                     $filter = "Contact/LastModifiedDateTime gt datetime('". $jobpersistent->get('lastsourcetimemodified') ."')";
                     $uri->setFilterBy($filter);
                     $uri->setOrderBy('Contact/LastModifiedDateTime ASC');
-                    $request = new Request('GET', $uri->output(true), ['connect_timeout' => 15]);
+                    $request = new Request('GET', $uri->output(true));
 					
-					$this->trace->output('HTTP request start time: ' . time());
+                    $http_start = time();
+                    $this->trace->output('HTTP request start time: ' . $http_start);
                     $response = client::get_instance()->send_request($request);
-					$this->trace->output('HTTP request end time: ' . time());
+                    $this->trace->output('HTTP request used: ' . (time()-$http_start) . ' seconds.');
 					
                     $collection = response_processor::process($response);
                     if ($collection->count() > 0) {
@@ -151,6 +152,7 @@ class contacts_job extends job {
 								
                                 // No need to process cancelled registrations.
                                 if ($resource->Status == RegistrationStatus::CANCELLED) {
+                                    $this->trace->output('end time (cancelled): ' . time());
                                     continue;
                                 }
                                 $contactresource = $resource->getContact();

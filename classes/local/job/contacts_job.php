@@ -138,18 +138,20 @@ class contacts_job extends job {
                     $uri->setFilterBy($filter);
                     $uri->setOrderBy('Contact/LastModifiedDateTime ASC');
                     $request = new Request('GET', $uri->output(true));
-					
+                    $this->trace->output('$filter: ' . $filter);
+                    $this->trace->output('$uri->output(true): ' . $uri->output(true));
+
                     $http_start = time();
                     $this->trace->output('HTTP request start time: ' . $http_start);
                     $response = client::get_instance()->send_request($request);
                     $this->trace->output('HTTP request used: ' . (time()-$http_start) . ' seconds.');
-					
+
                     $collection = response_processor::process($response);
                     if ($collection->count() > 0) {
                         foreach ($collection as $resource) {
                             try {
                                 $this->trace->output('start time: ' . time());
-								
+
                                 // No need to process cancelled registrations.
                                 if ($resource->Status == RegistrationStatus::CANCELLED) {
                                     $this->trace->output('end time (cancelled): ' . time());
